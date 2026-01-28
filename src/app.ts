@@ -1,6 +1,6 @@
 /// <reference path="./types/express.d.ts"/>
 import 'dotenv/config'
-import express, { Express, NextFunction, Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import apiRoutes from './routes/api';
 import path from 'path'
 import initDatabase from './config/seed';

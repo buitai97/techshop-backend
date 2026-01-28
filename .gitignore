@@ -2,4 +2,3 @@ node_modules
 .env
 dist
 .env*.local
-src/config/seed.ts
