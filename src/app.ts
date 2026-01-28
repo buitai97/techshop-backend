@@ -40,7 +40,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 //config routes
 apiRoutes(app)
 // seeding data
-if (process.env.NODE_ENV === 'development' && !process.env.VERCEL) {
+if (process.env.NODE_ENV === 'development') {
     initDatabase();
 }
 
