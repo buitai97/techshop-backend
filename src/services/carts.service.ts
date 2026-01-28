@@ -92,4 +92,15 @@ const deleteCartItem = async (cartItemId: number) => {
     })
 }
 
-export { getCartById, getUserCartSum, addToCart, updateCart, deleteCartItem }
+const emptyCart = async (userId: number) => {
+    const cart = await prisma.cart.findUnique({
+        where: { userId }
+    })
+    if (cart) {
+        await prisma.cartItem.deleteMany({
+            where: { cartId: cart.id }
+        })
+    }
+}
+
+export { getCartById, getUserCartSum, addToCart, updateCart, deleteCartItem, emptyCart }

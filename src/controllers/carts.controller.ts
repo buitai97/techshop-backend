@@ -1,4 +1,4 @@
-import { addToCart, getCartById, getUserCartSum, updateCart } from "../services/carts.service"
+import { addToCart, emptyCart, getCartById, getUserCartSum, updateCart } from "../services/carts.service"
 import { Request, Response } from "express"
 
 
@@ -25,7 +25,12 @@ const updateCartAPI = async (req: Request, res: Response) => {
     return res.status(200).json({ message: `Cart with id ${cartItemId} updated successfully` });
 }
 
+const emptyCartAPI = async (req: Request, res: Response) => {
+    await emptyCart(+req.user!.id);
+    return res.status(200).json({ message: `Cart emptied successfully` });
+}
 
 
 
-export { getCartAPI, getUserCartSumAPI, addToCartAPI, updateCartAPI }
+
+export { getCartAPI, getUserCartSumAPI, addToCartAPI, updateCartAPI, emptyCartAPI }

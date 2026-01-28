@@ -3,7 +3,7 @@ import { fetchAccountAPI, getUsersAPI, loginAPI, registerAPI } from '../controll
 import { getProductByIdAPI, getProductsAPI } from '../controllers/products.controller'
 import { checkValidJWT } from '../middleware/jwt.middleware'
 import { postDeleteUser } from '../controllers/users.controller'
-import { addToCartAPI, getCartAPI, getUserCartSumAPI, updateCartAPI } from '../controllers/carts.controller'
+import { addToCartAPI, emptyCartAPI, getCartAPI, getUserCartSumAPI, updateCartAPI } from '../controllers/carts.controller'
 
 const router = express.Router()
 
@@ -27,6 +27,7 @@ const apiRoutes = (app: Express) => {
     router.get("/cartCount", getUserCartSumAPI)
     router.post("/cart", addToCartAPI)
     router.put("/cart", updateCartAPI)
+    router.post("/cart/empty", emptyCartAPI)
 
     // // orders
     // router.get("/orders", getOrdersAPI)
