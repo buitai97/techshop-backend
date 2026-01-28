@@ -47,7 +47,7 @@ const getOrders = async (page: number) => {
 }
 
 const getOrderById = async (id: string) => {
-    const order = await prisma.order.findUnique({ where: { id: +id }, include: { orderDetails: { include: { product: true } } } })
+    const order = await prisma.order.findUnique({ where: { id: +id }, include: { user: true, orderItems: true } })
     return order
 }
 
