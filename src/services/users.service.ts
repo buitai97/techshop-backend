@@ -5,14 +5,12 @@ import { JwtPayload } from '../types/jwt';
 import { ACCOUNT_TYPE } from '../config/constant';
 
 const saltRounds = 10;
-
-
 const handleGetAllUsers = async () => {
     const users = await prisma.user.findMany({ omit: { password: true, phone: true, addressId: true, roleId: true, accountType: true }, include: { role: true } })
     const count = await prisma.user.count()
     return [users, count]
-
 }
+
 const hashPassword = async (plainText: string) => {
     return await bcrypt.hash(plainText, saltRounds)
 }
@@ -46,7 +44,6 @@ const handleGetUserById = async (id: string) => {
     })
     return user
 }
-
 
 const handleGetRoleDetail = async (roleId: string) => {
     const result = await prisma.role.findUnique({

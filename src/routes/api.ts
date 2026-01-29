@@ -4,6 +4,7 @@ import { getProductByIdAPI, getProductsAPI } from '../controllers/products.contr
 import { checkValidJWT } from '../middleware/jwt.middleware'
 import { postDeleteUser } from '../controllers/users.controller'
 import { addToCartAPI, emptyCartAPI, getCartAPI, getUserCartSumAPI, updateCartAPI } from '../controllers/carts.controller'
+import { createOrderAPI } from '../controllers/orders.controller'
 
 const router = express.Router()
 
@@ -32,7 +33,7 @@ const apiRoutes = (app: Express) => {
     // // orders
     // router.get("/orders", getOrdersAPI)
     // router.get("/orders/:id", getOrderByIdAPI)
-    // router.post("/orders", createOrderAPI)
+    router.post("/orders", createOrderAPI)
     // router.put("/orders/:id", updateOrderAPI)
     // router.delete("/orders/:id", deleteOrderAPI)
 
