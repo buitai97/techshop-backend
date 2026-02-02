@@ -21,7 +21,6 @@ const addToCartAPI = async (req: Request, res: Response) => {
 const updateCartAPI = async (req: Request, res: Response) => {
     const { cartItemId, quantity } = req.body;
     await updateCart(+cartItemId, +quantity);
-
     return res.status(200).json({ message: `Cart with id ${cartItemId} updated successfully` });
 }
 
