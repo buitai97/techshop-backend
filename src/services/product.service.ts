@@ -15,7 +15,6 @@ const createProduct = async (productData: Product) => {
             image: productData.image
         }
     })
-
 }
 
 const updateProduct = async (id: number, productData: Product) => {

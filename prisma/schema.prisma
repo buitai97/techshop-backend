@@ -44,27 +44,6 @@ model Role {
     @@map("roles")
 }
 
-model Order {
-    id            Int      @id @default(autoincrement())
-    totalPrice    Float?
-    address       Address  @relation(fields: [addressId], references: [id])
-    addressId     Int
-    name          String   @db.VarChar(255)
-    phone         String?  @db.VarChar(255)
-    email         String   @db.VarChar(255)
-    date          DateTime @default(now())
-    status        String   @default("PENDING")
-    paymentMethod String   @db.VarChar(255)
-    paymentStatus String   @default("PROCESSING")
-    user          User?    @relation(fields: [userId], references: [id])
-    userId        Int?
-
-    orderItems OrderItem[]
-    payment    Payment?
-
-    @@map("orders")
-}
-
 model Address {
     id      Int    @id @default(autoincrement())
     street  String @db.VarChar(50)
@@ -77,20 +56,6 @@ model Address {
 
     @@unique([street, city, state, zipCode])
     @@map("addresses")
-}
-
-model OrderItem {
-    id       Int @id @default(autoincrement())
-    price    Int
-    quantity Int
-
-    order   Order @relation(fields: [orderId], references: [id])
-    orderId Int
-
-    product   Product @relation(fields: [productId], references: [id])
-    productId Int
-
-    @@map("order_items")
 }
 
 model Product {
@@ -132,12 +97,45 @@ model CartItem {
     @@map("cart_items")
 }
 
+model Order {
+    id            Int      @id @default(autoincrement())
+    totalPrice    Float?
+    address       Address  @relation(fields: [addressId], references: [id])
+    addressId     Int
+    name          String   @db.VarChar(255)
+    phone         String?  @db.VarChar(255)
+    email         String   @db.VarChar(255)
+    date          DateTime @default(now())
+    user          User?    @relation(fields: [userId], references: [id])
+    userId        Int?
+
+    orderItems OrderItem[]
+    payment    Payment?
+
+    @@map("orders")
+}
+
+model OrderItem {
+    id       Int @id @default(autoincrement())
+    price    Int
+    quantity Int
+
+    order   Order @relation(fields: [orderId], references: [id])
+    orderId Int
+
+    product   Product @relation(fields: [productId], references: [id])
+    productId Int
+
+    @@map("order_items")
+}
+
 model Payment {
     id            Int    @id @default(autoincrement())
     cardNumber    String @db.VarChar(20)
     expDate       String @db.VarChar(10)
     CVV           String @db.VarChar(5)
     paymentMethod String @db.VarChar(50)
+    status        String @default("COMPLETED") @db.VarChar(50)
     order         Order  @relation(fields: [orderId], references: [id])
     orderId       Int    @unique
 
