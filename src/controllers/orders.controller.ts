@@ -2,18 +2,17 @@ import { createNewAddress, createOrder, makePayment } from "../services/orders.s
 import { Request, Response } from "express"
 
 const createOrderAPI = async (req: Request, res: Response) => {
-    // Implementation for creating an order
-    console.log("Creating order with data:", req.body);
-    const { name, address, email, orderItems, cardNumber, CVV, expDate, paymentMethod } = req.body;
+    const { name, address, email, totalPrice, orderItems, paymentDetails } = req.body;
     const addressId = await createNewAddress(address.street, address.city, address.state, address.zipCode);
     const orderId = await createOrder(
         name,
         email,
         addressId,
+        totalPrice,
         orderItems,
     );
-    await makePayment(orderId, cardNumber, expDate, CVV, paymentMethod);
-
+    await makePayment(orderId, paymentDetails);
+    res.status(201).json({ message: "Order created and payment processed successfully", orderId });
 }
 
 export { createOrderAPI }

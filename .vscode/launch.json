@@ -1,16 +1,19 @@
 {
-    "version": "1.0.0",
-    "configurations": [
-        {
-            "name": "debug-hoidanit",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run",
-                "start:debug"
-            ]
-        }
-    ],
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug App (TSX)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["./node_modules/tsx/dist/cli.mjs"],
+      "args": ["src/app.ts"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "restart": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
 }

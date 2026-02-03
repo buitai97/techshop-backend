@@ -98,16 +98,16 @@ model CartItem {
 }
 
 model Order {
-    id            Int      @id @default(autoincrement())
-    totalPrice    Float?
-    address       Address  @relation(fields: [addressId], references: [id])
-    addressId     Int
-    name          String   @db.VarChar(255)
-    phone         String?  @db.VarChar(255)
-    email         String   @db.VarChar(255)
-    date          DateTime @default(now())
-    user          User?    @relation(fields: [userId], references: [id])
-    userId        Int?
+    id         Int      @id @default(autoincrement())
+    totalPrice Float
+    address    Address  @relation(fields: [addressId], references: [id])
+    addressId  Int
+    name       String   @db.VarChar(255)
+    phone      String?  @db.VarChar(255)
+    email      String   @db.VarChar(255)
+    date       DateTime @default(now())
+    user       User?    @relation(fields: [userId], references: [id])
+    userId     Int?
 
     orderItems OrderItem[]
     payment    Payment?
@@ -120,11 +120,11 @@ model OrderItem {
     price    Int
     quantity Int
 
-    order   Order @relation(fields: [orderId], references: [id])
     orderId Int
 
-    product   Product @relation(fields: [productId], references: [id])
     productId Int
+    product   Product @relation(fields: [productId], references: [id])
+    order     Order   @relation(fields: [orderId], references: [id])
 
     @@map("order_items")
 }
