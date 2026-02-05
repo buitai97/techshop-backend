@@ -27,7 +27,6 @@ app.use(express.urlencoded({ extended: true }))
 
 //config static files: images/css/js
 app.use(express.static(path.join(process.cwd(), 'public')))
-
 app.get('/api/health', (req: Request, res: Response) => {
     res.json({
         status: 'ok',

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { getProductById, getProducts } from "../services/product.service";
+import { addProduct, deleteProduct, getProductById, getProducts } from "../services/product.service";
 
 
 const getProductsAPI = async (req: Request, res: Response) => {
@@ -15,5 +15,21 @@ const getProductByIdAPI = async (req: Request, res: Response) => {
     return res.status(200).json(product)
 }
 
+const addProductAPI = async (req: Request, res: Response) => {
+    const imagePath = req.file ? req.file.filename : null;
 
-export { getProductsAPI, getProductByIdAPI }
+    const productData = req.body;
+    const newProduct = await addProduct(productData, imagePath);
+    console.log("New product added:", newProduct);
+    return res.status(200).json(newProduct);
+}
+
+const deleteProductAPI = async (req: Request, res: Response) => {
+    console.log("Received request to delete product with ID:", req.params.id);
+    const productId = +req.params.id;
+    await deleteProduct(productId);
+    return res.status(200).json({ message: 'Product deleted successfully' });
+}
+
+
+export { getProductsAPI, getProductByIdAPI, addProductAPI, deleteProductAPI }

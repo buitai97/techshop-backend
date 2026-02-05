@@ -1,10 +1,11 @@
 import express, { Express } from 'express'
 import { fetchAccountAPI, getUsersAPI, loginAPI, registerAPI } from '../controllers/users.controller'
-import { getProductByIdAPI, getProductsAPI } from '../controllers/products.controller'
+import { addProductAPI, deleteProductAPI, getProductByIdAPI, getProductsAPI } from '../controllers/products.controller'
 import { checkValidJWT } from '../middleware/jwt.middleware'
 import { postDeleteUser } from '../controllers/users.controller'
 import { addToCartAPI, emptyCartAPI, getCartAPI, getUserCartSumAPI, updateCartAPI } from '../controllers/carts.controller'
 import { createOrderAPI } from '../controllers/orders.controller'
+import fileUploadMiddleware from '../middleware/multer'
 
 const router = express.Router()
 
@@ -20,8 +21,10 @@ const apiRoutes = (app: Express) => {
     router.get("/account", fetchAccountAPI)
 
     //products
+    router.post("/products", fileUploadMiddleware("image", "images/product"), addProductAPI)
     router.get("/products", getProductsAPI)
     router.get("/products/:id", getProductByIdAPI)
+    router.delete("/products/:id", deleteProductAPI)
 
     // carts
     router.get("/cart", getCartAPI)

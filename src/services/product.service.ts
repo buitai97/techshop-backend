@@ -2,19 +2,21 @@ import { Product } from "@prisma/client"
 import { prisma } from "../config/client"
 import { TOTAL_ITEMS_PER_PAGE } from "../config/constant"
 
-const createProduct = async (productData: Product) => {
-    await prisma.product.create({
+const addProduct = async (productData: Product, imagePath: string | null) => {
+    const newProduct = await prisma.product.create({
         data: {
             detailDesc: productData.detailDesc,
             brand: productData.brand,
             name: productData.name,
-            price: productData.price,
-            quantity: productData.quantity,
+            price: +productData.price,
+            quantity: +productData.quantity,
             shortDesc: productData.shortDesc,
             category: productData.category,
-            image: productData.image
+            image: imagePath
         }
     })
+
+    return newProduct;
 }
 
 const updateProduct = async (id: number, productData: Product) => {
@@ -24,8 +26,8 @@ const updateProduct = async (id: number, productData: Product) => {
             detailDesc: productData.detailDesc,
             brand: productData.brand,
             name: productData.name,
-            price: productData.price,
-            quantity: productData.quantity,
+            price: +productData.price,
+            quantity: +productData.quantity,
             shortDesc: productData.shortDesc,
             category: productData.category,
             image: productData.image
@@ -34,6 +36,7 @@ const updateProduct = async (id: number, productData: Product) => {
 }
 
 const deleteProduct = async (id: number) => {
+    console.log("Deleting product with ID:", id);
     await prisma.product.delete({
         where: { id: id }
     })
@@ -150,4 +153,4 @@ const getProductById = async (id: number) => {
 
 
 
-export { createProduct, getProducts, deleteProduct, updateProduct, getOrders, getOrderById, getProductById, countTotalProductClientPages }
+export { addProduct, getProducts, deleteProduct, updateProduct, getOrders, getOrderById, getProductById, countTotalProductClientPages }
