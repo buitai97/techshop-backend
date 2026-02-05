@@ -3,6 +3,8 @@ import path from 'path'
 import { v4 } from 'uuid';
 
 const fileUploadMiddleware = (fieldName: string, dir: string = 'images') => {
+    console.log("fileUploadMiddleware called with:");
+    console.log(fieldName, dir);
     return multer({
         storage: multer.diskStorage({
             destination: 'public/' + dir,
