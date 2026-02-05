@@ -33,7 +33,6 @@ const addProductAPI = async (req: Request, res: Response) => {
   const imageUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imagePath}`;
   const productData = req.body;
   const newProduct = await addProduct(productData, imageUrl);
-  console.log(newProduct);
   return res.status(200).json(newProduct);
 };
 
