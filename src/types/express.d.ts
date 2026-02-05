@@ -1,10 +1,13 @@
-import { Product, Role } from '@prisma/client';
-import { JwtPayload } from './jwt';
+import { Product, Role } from "@prisma/client";
+import { JwtPayload } from "./jwt";
 declare global {
-    namespace Express {
-        interface Request {
-            user?: JwtPayload;
-        }
+  namespace Express {
+    interface Request {
+      user?: JwtPayload;
+      file?: Multer.File & {
+        key?: string;
+        location?: string;
+      };
     }
-
+  }
 }
