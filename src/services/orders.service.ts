@@ -1,4 +1,5 @@
 import { prisma } from "../config/client";
+import { TOTAL_ITEMS_PER_PAGE } from "../config/constant";
 
 const makePayment = async (
     orderId: number,
@@ -68,4 +69,21 @@ const createNewAddress = async (street: string, city: string, state: string, zip
     return address.id;
 }
 
-export { createOrder, createNewAddress, makePayment }
+const getOrderById = async (id: string) => {
+    const order = await prisma.order.findUnique({
+        where: { id: +id },
+        include: { user: true, orderItems: true },
+    });
+    return order;
+};
+const getOrders = async (page: number) => {
+    const skip = (page - 1) * TOTAL_ITEMS_PER_PAGE;
+    const orders = await prisma.order.findMany({
+        include: { user: true },
+        take: TOTAL_ITEMS_PER_PAGE,
+        skip,
+    });
+    return orders;
+};
+
+export { getOrders, getOrderById, createOrder, createNewAddress, makePayment }

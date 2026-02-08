@@ -62,7 +62,7 @@ model Product {
     id         Int     @id @default(autoincrement())
     name       String  @db.VarChar(255)
     price      Float
-    image      String? @db.VarChar(255)
+    imageKey   String? @db.VarChar(255)
     detailDesc String  @db.Text
     shortDesc  String  @db.VarChar(255)
     quantity   Int

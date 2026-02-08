@@ -21,7 +21,7 @@ const apiRoutes = (app: Express) => {
     router.get("/account", fetchAccountAPI)
 
     //products
-    router.post("/products", fileUploadMiddleware("image", "images/product"), addProductAPI)
+    router.post("/products", fileUploadMiddleware("image", "product"), addProductAPI)
     router.get("/products", getProductsAPI)
     router.get("/products/:id", getProductByIdAPI)
     router.delete("/products/:id", deleteProductAPI)
