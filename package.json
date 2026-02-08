@@ -34,7 +34,7 @@
     "serverless-http": "^4.0.0",
     "uuid": "11.0.5",
     "zod": "3.24.2",
-    "not-a-real-package": "1.0.0"
+    "asdasdasdasdasd": "0.0.1"
   },
   "nodemonConfig": {
     "watch": [
