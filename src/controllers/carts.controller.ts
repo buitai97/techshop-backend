@@ -24,6 +24,7 @@ const updateCartAPI = async (req: Request, res: Response) => {
     return res.status(200).json({ message: `Cart with id ${cartItemId} updated successfully` });
 }
 
+
 const emptyCartAPI = async (req: Request, res: Response) => {
     await emptyCart(+req.user!.id);
     return res.status(200).json({ message: `Cart emptied successfully` });

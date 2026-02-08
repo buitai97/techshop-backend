@@ -86,6 +86,7 @@ const updateCart = async (cartItemId: number, quantity: number) => {
         })
     }
 }
+// This function is used when user want to update the quantity of a cart item. If the quantity is updated to 0, the cart item will be deleted.
 const deleteCartItem = async (cartItemId: number) => {
     await prisma.cartItem.delete({
         where: { id: cartItemId }
