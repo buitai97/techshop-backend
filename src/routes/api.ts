@@ -23,7 +23,7 @@ import {
 import {
   createOrderAPI,
   getOrdersAPI,
-  getOrdersByUserIdAPI,
+  getOrdersByUserAPI,
 } from "../controllers/orders.controller";
 import fileUploadMiddleware from "../middleware/multer";
 
@@ -58,7 +58,7 @@ const apiRoutes = (app: Express) => {
 
   // // orders
   router.get("/orders", getOrdersAPI);
-  router.get("/orders/user", getOrdersByUserIdAPI);
+  router.get("/orders/user", getOrdersByUserAPI);
   // router.get("/orders/:id", getOrderByIdAPI)
   router.post("/orders", createOrderAPI);
   // router.put("/orders/:id", updateOrderAPI)

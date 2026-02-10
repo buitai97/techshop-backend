@@ -41,9 +41,11 @@ const getOrdersAPI = async (req: Request, res: Response) => {
   res.status(200).json(orders);
 };
 
-const getOrdersByUserIdAPI = async (req: Request, res: Response) => {
+const getOrdersByUserAPI = async (req: Request, res: Response) => {
+  console.log("User from request:", req.user); // Debugging line
   const userId = req.user!.id;
   const orders = await getOrdersByUserId(userId, 1, 10);
+  console.log(orders);
   res.status(200).json(orders);
 };
-export { createOrderAPI, getOrdersAPI, getOrdersByUserIdAPI };
+export { createOrderAPI, getOrdersAPI, getOrdersByUserAPI };
