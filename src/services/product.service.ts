@@ -1,5 +1,39 @@
-import { Product } from "@prisma/client";
+import { Prisma, Product } from "@prisma/client";
 import { prisma } from "../config/client";
+
+
+interface SearchProductsParams {
+    page?: number;
+    search?: string;
+    limit?: number;
+}
+
+const searchProducts = async ({ page = 1, search = "", limit = 10 }: SearchProductsParams) => {
+    const skip = (page - 1) * limit;
+    const where = search ? {
+        OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { brand: { contains: search, mode: "insensitive" } },
+            { category: { contains: search, mode: "insensitive" } },
+        ],
+    }
+        : {};
+
+    const [products, total] = await prisma.$transaction([
+        prisma.product.findMany({
+            where,
+            skip,
+            take: limit,
+        }),
+        prisma.product.count({ where }),
+    ]);
+    return {
+        products,
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+    }
+};
 
 const addProduct = async (productData: Product, imagePath: string | null) => {
     const newProduct = await prisma.product.create({
@@ -41,6 +75,7 @@ const deleteProduct = async (id: number) => {
 };
 
 const getProducts = async (
+    search?: string,
     page?: number,
     pageSize?: number,
     brands?: string | string[],
@@ -63,16 +98,26 @@ const getProducts = async (
     const take = pageSizeNum;
 
     // ---- filters ----
-    const whereClause: any = {};
+    const addFilters: Prisma.ProductWhereInput[] = [];
+
+    if (search?.trim()) {
+        addFilters.push({
+            OR: [
+                { name: { contains: search } },
+                { brand: { contains: search } },
+                { category: { contains: search } },
+            ],
+        })
+    };
 
     if (brands) {
         const brandsArray = Array.isArray(brands) ? brands : [brands];
-        if (brandsArray.length) whereClause.brand = { in: brandsArray };
+        if (brandsArray.length) addFilters.push({ brand: { in: brandsArray } });
     }
 
     if (categories) {
         const categoryArray = Array.isArray(categories) ? categories : [categories];
-        if (categoryArray.length) whereClause.category = { in: categoryArray };
+        if (categoryArray.length) addFilters.push({ category: { in: categoryArray } });
     }
 
     if (priceRange && priceRange.length === 2) {
@@ -80,15 +125,17 @@ const getProducts = async (
         const gte = Number(gt);
         const lte = Number(lt);
         if (Number.isFinite(gte) || Number.isFinite(lte)) {
-            whereClause.price = {
-                ...(Number.isFinite(gte) ? { gte } : {}),
-                ...(Number.isFinite(lte) ? { lte } : {}),
-            };
+            addFilters.push({
+                price: {
+                    ...(Number.isFinite(gte) ? { gte } : {}),
+                    ...(Number.isFinite(lte) ? { lte } : {}),
+                },
+            });
         }
     }
 
     if (inStockOnly === "true") {
-        whereClause.quantity = { gte: 1 };
+        addFilters.push({ quantity: { gte: 1 } });
     }
 
     if (price) {
@@ -105,7 +152,7 @@ const getProducts = async (
         }
 
         if (priceCondition.length) {
-            whereClause.OR = priceCondition;
+            addFilters.push({ OR: priceCondition });
         }
     }
 
@@ -120,12 +167,12 @@ const getProducts = async (
     // ---- query ----
     const [products, count] = await prisma.$transaction([
         prisma.product.findMany({
-            where: whereClause,
+            where: addFilters.length ? { AND: addFilters } : undefined,
             orderBy,
             skip,
             take,
         }),
-        prisma.product.count({ where: whereClause }),
+        prisma.product.count({ where: addFilters.length ? { AND: addFilters } : undefined }),
     ]);
 
     const totalPages = Math.max(1, Math.ceil(count / pageSizeNum));

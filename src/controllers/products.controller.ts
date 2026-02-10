@@ -9,10 +9,11 @@ import { prisma } from "../config/client";
 import { deleteImageFromS3 } from "../services/s3.service";
 
 const getProductsAPI = async (req: Request, res: Response) => {
-    const { brands, targets, price, priceRange, inStockOnly, sort } = req.query;
-    const page = Number((req.query.page as string | undefined) ?? "1");
-    const pageSize = Number((req.query.pageSize as string | undefined) ?? "20");
+    const { brands, targets, price, priceRange, inStockOnly, sort, searchTerm } = req.query;
+    const page = Number((req.query.page as string | undefined) ?? 1);
+    const pageSize = Number((req.query.pageSize as string | undefined) ?? 20);
     const products = await getProducts(
+        searchTerm as string,
         page,
         pageSize,
         brands as string[],
