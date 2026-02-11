@@ -70,7 +70,6 @@ CREATE TABLE `cart_items` (
     `productId` INTEGER NOT NULL,
     `cartId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `cart_items_productId_key`(`productId`),
     UNIQUE INDEX `cart_items_cartId_productId_key`(`cartId`, `productId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
