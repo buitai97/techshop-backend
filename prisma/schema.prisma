@@ -59,21 +59,33 @@ model Address {
 }
 
 model Product {
-    id         Int     @id @default(autoincrement())
-    name       String  @db.VarChar(255)
-    price      Float
-    imageKey   String? @db.VarChar(255)
-    detailDesc String  @db.Text
-    shortDesc  String  @db.VarChar(255)
-    quantity   Int
-    sold       Int?
-    brand      String  @default("Unknown") @db.VarChar(255)
-    category   String  @default("General") @db.VarChar(255)
+    id            Int            @id @default(autoincrement())
+    name          String         @db.VarChar(255)
+    price         Float
+    imageKey      String?        @db.VarChar(255)
+    detailDesc    String         @db.Text
+    shortDesc     String         @db.VarChar(255)
+    quantity      Int
+    sold          Int?
+    brand         String         @default("Unknown") @db.VarChar(255)
+    category      String         @default("General") @db.VarChar(255)
 
-    cartItems  CartItem[]
-    orderItems OrderItem[]
+    cartItems     CartItem[]
+    orderItems    OrderItem[]
+    productImages ProductImage[]
 
     @@map("products")
+}
+
+model ProductImage {
+    id        Int     @id @default(autoincrement())
+    imageKey  String  @db.VarChar(255)
+    sortOrder Int     @default(0)
+    productId Int
+    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    @@index([productId])
+    @@map("product_images")
 }
 
 model Cart {

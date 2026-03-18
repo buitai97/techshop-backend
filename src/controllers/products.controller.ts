@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import {
-    addProduct,
-    deleteProduct,
-    getProductById,
+  addProduct,
+  deleteProduct,
+  getProductById,
     getProducts,
 } from "../services/product.service";
 import { prisma } from "../config/client";
-import { deleteImageFromS3 } from "../services/s3.service";
+import { deleteImagesFromS3 } from "../services/s3.service";
 
 const getProductsAPI = async (req: Request, res: Response) => {
     const { brands, targets, price, priceRange, inStockOnly, sort, searchTerm } = req.query;
@@ -32,21 +32,37 @@ const getProductByIdAPI = async (req: Request, res: Response) => {
 };
 
 const addProductAPI = async (req: Request, res: Response) => {
-    const imageKey = req.file?.key ?? null;
-    const productData = req.body;
-    const newProduct = await addProduct(productData, imageKey);
-    return res.status(200).json(newProduct);
+    try {
+        const files = (req.files as Express.MulterS3.File[] | undefined) ?? [];
+        const imageKeys = files.map((file) => file.key);
+        const productData = req.body;
+        const newProduct = await addProduct(productData, imageKeys);
+        return res.status(200).json(newProduct);
+    } catch (error) {
+        console.error("Failed to create product:", error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : "Failed to create product",
+        });
+    }
 };
 
 const deleteProductAPI = async (req: Request, res: Response) => {
     const productId = +req.params.id;
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    const product = await prisma.product.findUnique({
+        where: { id: productId },
+        include: { productImages: true },
+    });
     if (!product) {
         return res.status(404).json({ message: "Product not found" });
     }
+    const imageKeys = [
+        product.imageKey,
+        ...product.productImages.map((image) => image.imageKey),
+    ].filter((imageKey): imageKey is string => Boolean(imageKey));
+
     await deleteProduct(productId);
-    if (product.imageKey) {
-        await deleteImageFromS3(product.imageKey)
+    if (imageKeys.length > 0) {
+        await deleteImagesFromS3(imageKeys)
     }
 
     return res.status(200).json({ message: "Product deleted successfully" });

@@ -15,4 +15,8 @@ const deleteImageFromS3 = async (imageKey: string) => {
     }
 }
 
-export { deleteImageFromS3 };
+const deleteImagesFromS3 = async (imageKeys: string[]) => {
+    await Promise.all(imageKeys.map((imageKey) => deleteImageFromS3(imageKey)));
+};
+
+export { deleteImageFromS3, deleteImagesFromS3 };

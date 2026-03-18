@@ -1,7 +1,21 @@
 import { Prisma, Product } from "@prisma/client";
 import { prisma } from "../config/client";
 
-const addProduct = async (productData: Product, imagePath: string | null) => {
+type ProductInput = {
+  detailDesc: string;
+  brand: string;
+  name: string;
+  price: number | string;
+  quantity: number | string;
+  shortDesc: string;
+  category: string;
+};
+
+const addProduct = async (
+  productData: ProductInput,
+  imagePaths: string[],
+) => {
+  const [coverImage, ...galleryImages] = imagePaths;
   const newProduct = await prisma.product.create({
     data: {
       detailDesc: productData.detailDesc,
@@ -11,7 +25,18 @@ const addProduct = async (productData: Product, imagePath: string | null) => {
       quantity: +productData.quantity,
       shortDesc: productData.shortDesc,
       category: productData.category,
-      imageKey: imagePath,
+      imageKey: coverImage ?? null,
+      productImages: {
+        create: galleryImages.map((imageKey, index) => ({
+          imageKey,
+          sortOrder: index + 1,
+        })),
+      },
+    },
+    include: {
+      productImages: {
+        orderBy: { sortOrder: "asc" },
+      },
     },
   });
 
@@ -159,6 +184,11 @@ const getProductById = async (id: number) => {
   const product = await prisma.product.findUnique({
     where: {
       id: id,
+    },
+    include: {
+      productImages: {
+        orderBy: { sortOrder: "asc" },
+      },
     },
   });
   return product;
