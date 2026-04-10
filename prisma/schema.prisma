@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id          Int     @id @default(autoincrement())
+    name        String? @db.VarChar(255)
+    email       String? @db.VarChar(255)
+    username    String? @unique @db.VarChar(255)
+    password    String? @db.VarChar(255)
+    phone       String? @db.VarChar(255)
+    accountType String  @db.VarChar(50)
+    avatar      String? @db.VarChar(255)
+
+    role      Role     @relation(fields: [roleId], references: [id])
+    roleId    Int
+    cart      Cart?
+    cartId    Int?
+    order     Order[]
+    addressId Int?
+    address   Address? @relation(fields: [addressId], references: [id])
+
+    @@map("users")
+}
+
+model Role {
+    id          Int    @id @default(autoincrement())
+    name        String @unique @db.VarChar(255)
+    description String @db.VarChar(255)
+
+    users User[]
+
+    @@map("roles")
+}
+
+model Address {
+    id      Int    @id @default(autoincrement())
+    street  String @db.VarChar(50)
+    city    String @db.VarChar(20)
+    state   String @db.VarChar(20)
+    zipCode String @db.VarChar(20)
+
+    order Order[]
+    user  User[]
+
+    @@unique([street, city, state, zipCode])
+    @@map("addresses")
+}
+
+model Product {
+    id            Int            @id @default(autoincrement())
+    name          String         @db.VarChar(255)
+    price         Float
+    imageKey      String?        @db.VarChar(255)
+    detailDesc    String         @db.Text
+    shortDesc     String         @db.VarChar(255)
+    quantity      Int
+    sold          Int?
+    brand         String         @default("Unknown") @db.VarChar(255)
+    category      String         @default("General") @db.VarChar(255)
+
+    cartItems     CartItem[]
+    orderItems    OrderItem[]
+    productImages ProductImage[]
+
+    @@map("products")
+}
+
+model ProductImage {
+    id        Int     @id @default(autoincrement())
+    imageKey  String  @db.VarChar(255)
+    sortOrder Int     @default(0)
+    productId Int
+    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    @@index([productId])
+    @@map("product_images")
+}
+
+model Cart {
+    id        Int        @id @default(autoincrement())
+    userId    Int        @unique
+    cartItems CartItem[]
+    user      User       @relation(fields: [userId], references: [id])
+
+    @@map("carts")
+}
+
+model CartItem {
+    id        Int     @id @default(autoincrement())
+    quantity  Int     @default(1)
+    productId Int     
+    product   Product @relation(fields: [productId], references: [id])
+    cartId    Int
+    cart      Cart    @relation(fields: [cartId], references: [id])
+
+    @@unique([cartId, productId])
+    @@map("cart_items")
+}
+
+model Order {
+    id         Int      @id @default(autoincrement())
+    totalPrice Float
+    address    Address  @relation(fields: [addressId], references: [id])
+    addressId  Int
+    name       String   @db.VarChar(255)
+    phone      String?  @db.VarChar(255)
+    email      String   @db.VarChar(255)
+    date       DateTime @default(now())
+    user       User?    @relation(fields: [userId], references: [id])
+    userId     Int?
+
+    orderItems OrderItem[]
+    payment    Payment?
+
+    @@map("orders")
+}
+
+model OrderItem {
+    id       Int @id @default(autoincrement())
+    price    Int
+    quantity Int
+
+    orderId Int
+
+    productId Int
+    product   Product @relation(fields: [productId], references: [id])
+    order     Order   @relation(fields: [orderId], references: [id])
+
+    @@map("order_items")
+}
+
+model Payment {
+    id                    Int    @id @default(autoincrement())
+    stripePaymentIntentId String @unique @db.VarChar(255)
+    paymentMethod         String @db.VarChar(50)
+    status                String @default("COMPLETED") @db.VarChar(50)
+    order                 Order  @relation(fields: [orderId], references: [id])
+    orderId               Int    @unique
+
+    @@map("payments")
+}
