@@ -142,14 +142,12 @@ model OrderItem {
 }
 
 model Payment {
-    id            Int    @id @default(autoincrement())
-    cardNumber    String @db.VarChar(20)
-    expDate       String @db.VarChar(10)
-    CVV           String @db.VarChar(5)
-    paymentMethod String @db.VarChar(50)
-    status        String @default("COMPLETED") @db.VarChar(50)
-    order         Order  @relation(fields: [orderId], references: [id])
-    orderId       Int    @unique
+    id                    Int    @id @default(autoincrement())
+    stripePaymentIntentId String @unique @db.VarChar(255)
+    paymentMethod         String @db.VarChar(50)
+    status                String @default("COMPLETED") @db.VarChar(50)
+    order                 Order  @relation(fields: [orderId], references: [id])
+    orderId               Int    @unique
 
     @@map("payments")
 }

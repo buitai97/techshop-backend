@@ -25,6 +25,7 @@ import {
   getOrdersAPI,
   getOrdersByUserAPI,
 } from "../controllers/orders.controller";
+import { createPaymentIntentAPI } from "../controllers/stripe.controller";
 import fileUploadMiddleware from "../middleware/multer";
 
 const router = express.Router();
@@ -55,6 +56,9 @@ const apiRoutes = (app: Express) => {
   router.post("/cart", addToCartAPI);
   router.put("/cart", updateCartAPI);
   router.post("/cart/empty", emptyCartAPI);
+
+  // payments
+  router.post("/payments/intent", createPaymentIntentAPI);
 
   // // orders
   router.get("/orders", getOrdersAPI);

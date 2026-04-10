@@ -4,6 +4,7 @@ import express, { Express, Request, Response } from "express";
 import apiRoutes from "./routes/api";
 import path from "path";
 import cors from "cors";
+import { stripeWebhookAPI } from "./controllers/stripe.controller";
 
 const app: Express = express();
 
@@ -20,6 +21,13 @@ app.use(
         optionsSuccessStatus: 200,
         credentials: true,
     }),
+);
+
+// Stripe webhook must receive raw body — register before express.json()
+app.post(
+    "/api/webhooks/stripe",
+    express.raw({ type: "application/json" }),
+    stripeWebhookAPI,
 );
 
 app.use(express.json());

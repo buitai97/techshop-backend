@@ -1,22 +1,24 @@
 import { prisma } from "../config/client";
 import { TOTAL_ITEMS_PER_PAGE } from "../config/constant";
+import { retrievePaymentIntent } from "./stripe.service";
 
 const makePayment = async (
   orderId: number,
   paymentDetails: {
-    cardNumber: string;
-    expDate: string;
-    CVV: string;
+    paymentIntentId: string;
     paymentMethod: string;
   },
 ) => {
-  // Simulate payment processing
+  const paymentIntent = await retrievePaymentIntent(paymentDetails.paymentIntentId);
+
+  if (paymentIntent.status !== "succeeded") {
+    throw new Error(`Payment not completed. Status: ${paymentIntent.status}`);
+  }
+
   await prisma.payment.create({
     data: {
       orderId,
-      cardNumber: paymentDetails.cardNumber,
-      expDate: paymentDetails.expDate,
-      CVV: paymentDetails.CVV,
+      stripePaymentIntentId: paymentDetails.paymentIntentId,
       paymentMethod: paymentDetails.paymentMethod,
       status: "COMPLETED",
     },
@@ -31,23 +33,41 @@ const createOrder = async (
   userId: number,
   orderItems: { productId: number; quantity: number; price: number }[],
 ) => {
-  const order = await prisma.order.create({
-    data: {
-      name,
-      email,
-      addressId,
-      totalPrice,
-      userId,
-      orderItems: {
-        create: orderItems.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.price,
-        })),
+  const order = await prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
+      data: {
+        name,
+        email,
+        addressId,
+        totalPrice,
+        userId,
+        orderItems: {
+          create: orderItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        },
       },
-    },
-    include: { orderItems: true },
+      include: { orderItems: true },
+    });
+
+    // Decrement stock for each ordered product
+    await Promise.all(
+      orderItems.map((item) =>
+        tx.product.update({
+          where: { id: item.productId },
+          data: {
+            quantity: { decrement: item.quantity },
+            sold: { increment: item.quantity },
+          },
+        }),
+      ),
+    );
+
+    return created;
   });
+
   return order.id;
 };
 
